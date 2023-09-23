@@ -1,0 +1,15 @@
+MyBatis缓存机制：
+    执行DQL（select语句）的时候，将查询结果存放至缓存中（内存当中）。
+    如果下一次执行完全相同的DQL语句，直接从缓存当中读取数据，不在查询数据库，不需要访问硬盘且不执行繁琐的查找算法。
+
+使用缓存的目的：减少硬盘的IO操作次数，提高执行效率。
+
+MyBatis缓存分为一级缓存和二级缓存：
+    一级缓存：MyBatis默认开启，不需要任何配置，作用范围为同一个Sqlsession对象。只要使用同一个Sqlsession对象执行相同的SQL语句，就会走一级缓存。
+            如果是两个Sqlsession对象执行同一条SQL语句，不会使用一级缓存。DQL语句使用不同的查询条件，也不使用一级缓存。
+    二级缓存：MyBatis默认开启，作用范围为同一个SqlsessionFactory对象。但是需要在xxxMapper.xml文件中添加配置<cache/>，使用二级缓存的对象类必须实现 java.io.Serializable 接口。
+            Sqlsession对象提交或关闭之后，一级缓存中的数据才会写入到二级缓存之中，此时二级缓存才可用。
+
+一级缓存什么时候会失效：
+    1. 执行了Sqlsession的clearCache()方法，手动清空缓存。
+    2. 执行了insert、update或delete语句，不论操作哪一张表，都会清空一级缓存。

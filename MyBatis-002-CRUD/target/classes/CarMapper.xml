@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--当两个Mapper文件中，拥有相同id的语句时，区分使用哪一个Mapper文件-->
+<mapper namespace="CarMapper">
+
+    <!--id是SQL语句的唯一标识-->
+    <!--增加-->
+    <insert id="insertCar">
+        insert into t_car(id, car_num, brand, guide_price, product_time, car_type)
+        values(null, #{car_num}, #{brand}, #{guide_price}, #{product_time}, #{cat_type})
+    </insert>
+    <insert id="insertCarByPojo">
+        insert into t_car(id, car_num, brand, guide_price, product_time, car_type)
+        values(null, #{carNum}, #{brand}, #{guidePrice}, #{productTime}, #{carType})
+    </insert>
+    <!--删除-->
+    <delete id="deleteByID">
+        delete from t_car where id = #{id}
+    </delete>
+    <!--修改-->
+    <update id="updateByID">
+        update t_car set id = 8, guide_price = 29.00 where id = #{id}
+    </update>
+    <!--查询单个-->
+    <select id="selectByID" resultType="pojo.Car">
+        <!--select * from t_car where id = #{id}-->
+        select
+            id,
+            car_num as carNum,
+            brand,
+            guide_price as guidePrice,
+            product_time as productTime,
+            car_type as carType
+        from
+            t_car
+        where
+            id = #{id}
+    </select>
+    <!--查询所有-->
+    <select id="selectAll" resultType="pojo.Car">
+        select
+            id,
+            car_num as carNum,
+            brand,
+            guide_price as guidePrice,
+            product_time as productTime,
+            car_type as carType
+        from
+            t_car
+    </select>
+</mapper>

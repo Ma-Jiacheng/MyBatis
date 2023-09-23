@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+    <settings>
+        <setting name="logImpl" value="STDOUT_LOGGING"/>
+    </settings>
+
+    <!--MyBatis可以同时配置多个环境，每个环境连接一个数据库-->
+    <!--每个环境会对应一个SqlSessionFactory对象-->
+
+    <!--default用于配置没有指定环境时使用哪个数据库环境为默认环境-->
+    <!--默认使用mybatisDB环境-->
+    <environments default="mybatisDB">
+        <!--这是第一个数据库环境配置文件，连接mybatis数据库-->
+        <environment id="mybatisDB">
+            <!--transactionManager用于配置事务管理器，指定MyBatis使用什么方式去管理事务-->
+            <!--Type属性有两个值：
+                    JDBC：使用原生的JDBC代码管理事务
+                        conn.setAutoCommit(false);
+                        ...
+                        conn.commit();
+                    MANAGED：MyBatis不在负责事务的管理，将事务管理交给其他的JEE容器来管理，例如Spring
+                MyBatis提供了一个事务管理接口Transaction，该接口下有两个实现类
+                    JdbcTransaction：如果Type="JDBC"，Transaction实例化JdbcTransaction对象
+                    ManagedTransaction：如果Type="MANAGED"，Transaction实例化ManagedTransaction
+            -->
+            <transactionManager type="JDBC"/>
+            <!--dataSource称为数据源，为程序提供Connection对象
+                数据源实际上是一套规范，JDK中有这套规范：javax.sql.DataSource
+                开发中也可以编写自己的数据源，只要实现javax.sql.DataSource接口，实现接口中的所有方法即可
+                常见的数据源组件：
+                    Druid连接池
+                    C3P0连接池
+                    DBCP连接池
+                Type属性用来指定数据源的类型，就是指定具体使用什么方式来获取Connection对象
+                    UNPOOLED：不使用数据库连接池技术，每一次请求过来之后，都是创建新的Connection对象
+                    POOLED：使用MyBatis自己实现的数据库连接池
+                    JNDI：集成其他第三方的数据库连接池
+            -->
+            <dataSource type="POOLED">
+                <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
+                <property name="url" value="jdbc:mysql://localhost:3306/mybatis"/>
+                <property name="username" value="root"/>
+                <property name="password" value="010921"/>
+                <!--正常使用连接池的话，许多参数都需要手动配置-->
+                <!--好的配置可以让连接池发挥的更好，事半功倍-->
+                <!--poolMaximumActiveConnections：连接池中最多的正在使用的连接对象的数量上限（最多有多少个连接可以活动，默认值为10）-->
+                <property name="poolMaximumActiveConnections" value="8"/>
+                <!--每间隔两秒打印日志，并且尝试获取连接对象-->
+                <property name="poolTimeToWait" value="2000"/>
+                <!--强行让某个连接空闲,超时时间的设置-->
+                <property name="poolMaximumCheckoutTime" value="8000"/>
+                <!--任意时间最多存在的空闲数量-->
+                <property name="poolMaximumIdleConnections" value="5"/>
+            </dataSource>
+        </environment>
+
+        <!--这是另一个数据库环境配置文件，连接spring数据库-->
+        <environment id="springDB">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
+                <property name="url" value="jdbc:mysql://localhost:3306/spring"/>
+                <property name="username" value="root"/>
+                <property name="password" value="010921"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <mappers>
+        <!--指定xxxMapper.xml文件的路径（从类的根路径开始查找资源）-->
+        <mapper resource="CarMapper.xml"/>
+    </mappers>
+</configuration>

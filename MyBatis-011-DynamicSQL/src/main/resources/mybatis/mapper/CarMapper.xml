@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mybatis.mapper.CarMapper">
+
+    <select id="selectByMultiCondition" resultType="Car">
+        <!--增加一个 1 = 1 恒成立的条件，避免if语句全部不执行，where关键字报错-->
+        select * from t_car where 1 = 1
+         <!--if标签的test属性是必须的，属性值为true（SQL语句进行拼接）或false（SQL语句不进行拼接）-->
+        <if test="brand != null and brand != ''">
+            brand like "%"#{brand}"%"
+        </if>
+        <if test="guidePrice != null and brand != ''">
+            and guide_price > #{guidePrice}
+        </if>
+        <if test="carType != null and brand != ''">
+            and car_type = #{carType}
+        </if>
+    </select>
+
+
+    <select id="selectByMultiConditionWhere" resultType="Car">
+        <!--负责where子句动态生成-->
+        select * from t_car
+        <where>
+            <if test="brand != null and brand != ''">
+                brand like "%"#{brand}"%"
+            </if>
+            <!--where标签可以自动去除前缀多余的and和or关键字-->
+            <if test="guidePrice != null and brand != ''">
+                and guide_price > #{guidePrice}
+            </if>
+            <if test="carType != null and brand != ''">
+                and car_type = #{carType}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectByMultiConditionTrim" resultType="Car">
+        select * from t_car
+        <!--
+            prefix:加前缀
+            suffix:加后缀
+            prefixOverrides:去掉前缀
+            suffixOverrides:去掉后缀
+        -->
+        <trim prefix="where" suffixOverrides="and | or">
+            <if test="brand != null and brand != ''">
+                brand like "%"#{brand}"%" and
+            </if>
+            <if test="guidePrice != null and brand != ''">
+                guide_price > #{guidePrice} and
+            </if>
+            <if test="carType != null and brand != ''">
+                car_type = #{carType}
+            </if>
+        </trim>
+    </select>
+
+    <update id="updateByIdSet">
+        update t_car
+        <set>
+            <if test="carNum != null and carNum != ''">car_num = #{carNum},</if>
+            <if test="brand != null and brand != ''">brand = #{brand},</if>
+            <if test="guidePrice != null and guidePrice != ''">guide_price = #{guidePrice},</if>
+            <if test="productTime != null and productTime != ''">product_time = #{productTime},</if>
+            <if test="carType != null and carType != ''">car_type = #{carType},</if>
+        </set>
+        where
+            id = #{id}
+    </update>
+
+    <select id="selectByChoose" resultType="Car">
+        select * from t_car
+        where
+            <choose>
+                <when test="brand != null and brand != ''">
+                    brand like "%"#{brand}"%"
+                </when>
+                <when test="guidePrice != null and guidePrice != ''">
+                    guide_price > #{guidePrice}
+                </when>
+                <otherwise>
+                    car_type = #{carType}
+                </otherwise>
+            </choose>
+    </select>
+
+    <delete id="deleteByIds">
+        delete from t_car where id in(
+            <!--
+                collection:指定数组或集合
+                item:代表数组或集合中的元素
+                separator:循环之间的分隔符
+            -->
+            <foreach collection="ids" item="id" separator=",">
+                #{id}
+            </foreach>
+            )
+    </delete>
+
+    <insert id="insertBatch" parameterType="Car">
+        insert into t_car values
+        <foreach collection="cars" item="car" separator=",">
+            (null, #{car.carNum}, #{car.brand}, #{car.guidePrice}, #{car.productTime}, #{car.carType})
+        </foreach>
+    </insert>
+</mapper>

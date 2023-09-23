@@ -1,0 +1,5 @@
+mybatis\pojo\Student.class
+mybatis\mapper\StudentMapper.class
+mybatis\util\SqlSessionUtil.class
+mybatis\mapper\ClazzMapper.class
+mybatis\pojo\Clazz.class

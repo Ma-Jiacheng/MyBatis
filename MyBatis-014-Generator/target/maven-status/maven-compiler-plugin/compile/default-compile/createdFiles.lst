@@ -1,0 +1,3 @@
+mybatis\mapper\CarMapper.class
+mybatis\util\SqlSessionUtil.class
+mybatis\pojo\Car.class
